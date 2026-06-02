@@ -1,0 +1,376 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E0000000000000000000E001 /* MustDoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A001 /* MustDoApp.swift */; };
+		E0000000000000000000E002 /* TodoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A002 /* TodoItem.swift */; };
+		E0000000000000000000E003 /* MediaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A003 /* MediaStore.swift */; };
+		E0000000000000000000E004 /* YTDLPService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A004 /* YTDLPService.swift */; };
+		E0000000000000000000E005 /* RSSParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A005 /* RSSParser.swift */; };
+		E0000000000000000000E006 /* EPUBLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A006 /* EPUBLoader.swift */; };
+		E0000000000000000000E007 /* MetadataFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A007 /* MetadataFetcher.swift */; };
+		E0000000000000000000E008 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A008 /* ContentView.swift */; };
+		E0000000000000000000E009 /* CategoryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A009 /* CategoryListView.swift */; };
+		E0000000000000000000E00A /* AddItemSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A00A /* AddItemSheet.swift */; };
+		E0000000000000000000E00B /* ItemDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A00B /* ItemDetailView.swift */; };
+		E0000000000000000000E00C /* PDFReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A00C /* PDFReaderView.swift */; };
+		E0000000000000000000E00D /* WebPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A00D /* WebPageView.swift */; };
+		E0000000000000000000E00E /* EPUBReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A00E /* EPUBReaderView.swift */; };
+		E0000000000000000000E00F /* AudioPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A00F /* AudioPlayerView.swift */; };
+		E0000000000000000000E010 /* PodcastFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A010 /* PodcastFeedView.swift */; };
+		E0000000000000000000F001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000B003 /* Assets.xcassets */; };
+		E0000000000000000000F002 /* yt-dlp in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000B004 /* yt-dlp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F0000000000000000000A001 /* MustDoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MustDoApp.swift; sourceTree = "<group>"; };
+		F0000000000000000000A002 /* TodoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoItem.swift; sourceTree = "<group>"; };
+		F0000000000000000000A003 /* MediaStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaStore.swift; sourceTree = "<group>"; };
+		F0000000000000000000A004 /* YTDLPService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTDLPService.swift; sourceTree = "<group>"; };
+		F0000000000000000000A005 /* RSSParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSSParser.swift; sourceTree = "<group>"; };
+		F0000000000000000000A006 /* EPUBLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBLoader.swift; sourceTree = "<group>"; };
+		F0000000000000000000A007 /* MetadataFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataFetcher.swift; sourceTree = "<group>"; };
+		F0000000000000000000A008 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F0000000000000000000A009 /* CategoryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryListView.swift; sourceTree = "<group>"; };
+		F0000000000000000000A00A /* AddItemSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemSheet.swift; sourceTree = "<group>"; };
+		F0000000000000000000A00B /* ItemDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailView.swift; sourceTree = "<group>"; };
+		F0000000000000000000A00C /* PDFReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFReaderView.swift; sourceTree = "<group>"; };
+		F0000000000000000000A00D /* WebPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPageView.swift; sourceTree = "<group>"; };
+		F0000000000000000000A00E /* EPUBReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBReaderView.swift; sourceTree = "<group>"; };
+		F0000000000000000000A00F /* AudioPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerView.swift; sourceTree = "<group>"; };
+		F0000000000000000000A010 /* PodcastFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastFeedView.swift; sourceTree = "<group>"; };
+		F0000000000000000000B001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F0000000000000000000B002 /* MustDo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MustDo.entitlements; sourceTree = "<group>"; };
+		F0000000000000000000B003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F0000000000000000000B004 /* yt-dlp */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "yt-dlp"; sourceTree = "<group>"; };
+		F0000000000000000000C001 /* MustDo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MustDo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E0000000000000000000G002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F0000000000000000000D001 /* MustDoProject */ = {
+			isa = PBXGroup;
+			children = (
+				F0000000000000000000D002 /* MustDo */,
+				F0000000000000000000D007 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F0000000000000000000D002 /* MustDo */ = {
+			isa = PBXGroup;
+			children = (
+				F0000000000000000000A001 /* MustDoApp.swift */,
+				F0000000000000000000D003 /* Models */,
+				F0000000000000000000D004 /* Services */,
+				F0000000000000000000D005 /* Views */,
+				F0000000000000000000D006 /* Resources */,
+				F0000000000000000000B003 /* Assets.xcassets */,
+				F0000000000000000000B001 /* Info.plist */,
+				F0000000000000000000B002 /* MustDo.entitlements */,
+			);
+			path = MustDo;
+			sourceTree = "<group>";
+		};
+		F0000000000000000000D003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F0000000000000000000A002 /* TodoItem.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F0000000000000000000D004 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F0000000000000000000A003 /* MediaStore.swift */,
+				F0000000000000000000A004 /* YTDLPService.swift */,
+				F0000000000000000000A005 /* RSSParser.swift */,
+				F0000000000000000000A006 /* EPUBLoader.swift */,
+				F0000000000000000000A007 /* MetadataFetcher.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		F0000000000000000000D005 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F0000000000000000000A008 /* ContentView.swift */,
+				F0000000000000000000A009 /* CategoryListView.swift */,
+				F0000000000000000000A00A /* AddItemSheet.swift */,
+				F0000000000000000000A00B /* ItemDetailView.swift */,
+				F0000000000000000000A00C /* PDFReaderView.swift */,
+				F0000000000000000000A00D /* WebPageView.swift */,
+				F0000000000000000000A00E /* EPUBReaderView.swift */,
+				F0000000000000000000A00F /* AudioPlayerView.swift */,
+				F0000000000000000000A010 /* PodcastFeedView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F0000000000000000000D006 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F0000000000000000000B004 /* yt-dlp */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F0000000000000000000D007 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F0000000000000000000C001 /* MustDo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F0000000000000000000H001 /* MustDo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F0000000000000000000K002 /* Build configuration list for PBXNativeTarget "MustDo" */;
+			buildPhases = (
+				E0000000000000000000G001 /* Sources */,
+				E0000000000000000000G002 /* Frameworks */,
+				E0000000000000000000G003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MustDo;
+			productName = MustDo;
+			productReference = F0000000000000000000C001 /* MustDo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F0000000000000000000I001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					F0000000000000000000H001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = F0000000000000000000K001 /* Build configuration list for PBXProject "MustDo" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F0000000000000000000D001;
+			productRefGroup = F0000000000000000000D007 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F0000000000000000000H001 /* MustDo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E0000000000000000000G003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E0000000000000000000F001 /* Assets.xcassets in Resources */,
+				E0000000000000000000F002 /* yt-dlp in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E0000000000000000000G001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E0000000000000000000E001 /* MustDoApp.swift in Sources */,
+				E0000000000000000000E002 /* TodoItem.swift in Sources */,
+				E0000000000000000000E003 /* MediaStore.swift in Sources */,
+				E0000000000000000000E004 /* YTDLPService.swift in Sources */,
+				E0000000000000000000E005 /* RSSParser.swift in Sources */,
+				E0000000000000000000E006 /* EPUBLoader.swift in Sources */,
+				E0000000000000000000E007 /* MetadataFetcher.swift in Sources */,
+				E0000000000000000000E008 /* ContentView.swift in Sources */,
+				E0000000000000000000E009 /* CategoryListView.swift in Sources */,
+				E0000000000000000000E00A /* AddItemSheet.swift in Sources */,
+				E0000000000000000000E00B /* ItemDetailView.swift in Sources */,
+				E0000000000000000000E00C /* PDFReaderView.swift in Sources */,
+				E0000000000000000000E00D /* WebPageView.swift in Sources */,
+				E0000000000000000000E00E /* EPUBReaderView.swift in Sources */,
+				E0000000000000000000E00F /* AudioPlayerView.swift in Sources */,
+				E0000000000000000000E010 /* PodcastFeedView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F0000000000000000000J001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F0000000000000000000J002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		F0000000000000000000J003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MustDo/MustDo.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MustDo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.moerdowo.MustDo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F0000000000000000000J004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MustDo/MustDo.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MustDo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.moerdowo.MustDo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F0000000000000000000K001 /* Build configuration list for PBXProject "MustDo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0000000000000000000J001 /* Debug */,
+				F0000000000000000000J002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F0000000000000000000K002 /* Build configuration list for PBXNativeTarget "MustDo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0000000000000000000J003 /* Debug */,
+				F0000000000000000000J004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F0000000000000000000I001 /* Project object */;
+}

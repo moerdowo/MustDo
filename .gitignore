@@ -1,0 +1,10 @@
+.DS_Store
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# Bundled binary fetched by scripts/fetch_ytdlp.sh (large, fetch on demand)
+MustDo/Resources/yt-dlp
