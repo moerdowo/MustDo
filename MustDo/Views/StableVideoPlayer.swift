@@ -1,25 +1,40 @@
 import SwiftUI
 import AVKit
 
-/// VideoPlayer wrapper that keeps a single AVPlayer alive across body
-/// re-evaluations. The previous code built `AVPlayer(url:)` inline,
-/// which made SwiftUI recreate the underlying NSViewRepresentable on
-/// every diff and was implicated in a Swift-runtime metadata crash on
-/// macOS 26 when the detail pane transitioned in after a drag-and-drop.
-struct StableVideoPlayer: View {
+/// Plain NSViewRepresentable around AVPlayerView.
+///
+/// Why not SwiftUI's VideoPlayer? On macOS 26 the metadata resolution
+/// for `VideoPlayer<EmptyView>` aborts in `getSuperclassMetadata` the
+/// first time SwiftUI tries to materialize it inside our detail pane.
+/// PDFReaderView / WebPageView (both bare NSViewRepresentables) work,
+/// so we mirror that pattern here.
+struct StableVideoPlayer: NSViewRepresentable {
     let url: URL
 
-    @State private var player: AVPlayer = AVPlayer()
-    @State private var loadedURL: URL?
+    final class Coordinator {
+        var loadedURL: URL?
+    }
 
-    var body: some View {
-        VideoPlayer(player: player)
-            .task(id: url) {
-                if loadedURL != url {
-                    player.replaceCurrentItem(with: AVPlayerItem(url: url))
-                    loadedURL = url
-                }
-            }
-            .onDisappear { player.pause() }
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    func makeNSView(context: Context) -> AVPlayerView {
+        let view = AVPlayerView()
+        view.controlsStyle = .floating
+        view.allowsPictureInPicturePlayback = true
+        view.showsFullScreenToggleButton = true
+        view.player = AVPlayer()
+        return view
+    }
+
+    func updateNSView(_ view: AVPlayerView, context: Context) {
+        if context.coordinator.loadedURL != url {
+            view.player?.replaceCurrentItem(with: AVPlayerItem(url: url))
+            context.coordinator.loadedURL = url
+        }
+    }
+
+    static func dismantleNSView(_ view: AVPlayerView, coordinator: Coordinator) {
+        view.player?.pause()
+        view.player = nil
     }
 }
