@@ -10,9 +10,7 @@ struct CategoryListView: View {
     @Query private var items: [TodoItem]
     @State private var showCompleted = false
     @State private var isDropTargeted = false
-
-    @State private var presentingTextSheet = false
-    @State private var presentingURLSheet: URLItemSheet.URLKind?
+    @State private var presentingAdd = false
 
     init(category: MustCategory, selectedItemID: Binding<UUID?>) {
         self.category = category
@@ -51,24 +49,19 @@ struct CategoryListView: View {
                     }
                     .toggleStyle(.button)
 
-                    addMenuToolbarItem
+                    Button {
+                        presentingAdd = true
+                    } label: {
+                        Label("Add", systemImage: "plus")
+                    }
                 }
             }
-            .sheet(isPresented: $presentingTextSheet) {
-                TextItemSheet(category: category) { title, notes in
-                    let item = TodoItem(
-                        category: category,
-                        title: title.isEmpty ? "Untitled" : title,
-                        notes: notes
-                    )
-                    context.insert(item)
-                    selectedItemID = item.id
-                }
-            }
-            .sheet(item: $presentingURLSheet) { kind in
-                URLItemSheet(kind: kind) { urlString, title in
-                    addURLItem(kind: kind, urlString: urlString, title: title)
-                }
+            .sheet(isPresented: $presentingAdd) {
+                AddItemSheet(
+                    initialCategory: category,
+                    onPickedCategory: { _ in },
+                    onItemAdded: { selectedItemID = $0 }
+                )
             }
     }
 
@@ -76,9 +69,7 @@ struct CategoryListView: View {
         if filteredItems.isEmpty {
             EmptyStateView(
                 category: category,
-                onTextAdd: { presentingTextSheet = true },
-                onURLAdd: { presentingURLSheet = $0 },
-                onFilePick: pickFiles
+                onAdd: { presentingAdd = true }
             )
         } else {
             List(selection: $selectedItemID) {
@@ -121,135 +112,7 @@ struct CategoryListView: View {
         .allowsHitTesting(false)
     }
 
-    @ViewBuilder private var addMenuToolbarItem: some View {
-        switch category {
-        case .mustDo:
-            Button {
-                presentingTextSheet = true
-            } label: {
-                Label("New Todo", systemImage: "plus")
-            }
-            .keyboardShortcut("n", modifiers: .command)
-
-        case .mustWatch:
-            Menu {
-                Button {
-                    presentingURLSheet = .watchVideo
-                } label: { Label("Paste Video URL…", systemImage: "link") }
-                Button {
-                    pickFiles()
-                } label: { Label("Add Video File…", systemImage: "film") }
-            } label: {
-                Label("Add", systemImage: "plus")
-            }
-
-        case .mustRead:
-            Menu {
-                Button {
-                    presentingURLSheet = .readWeb
-                } label: { Label("Paste Web URL…", systemImage: "globe") }
-                Button {
-                    pickFiles()
-                } label: { Label("Add PDF / EPUB / Doc…", systemImage: "doc.text") }
-            } label: {
-                Label("Add", systemImage: "plus")
-            }
-
-        case .mustListen:
-            Menu {
-                Button {
-                    presentingURLSheet = .listenPodcast
-                } label: { Label("Add Podcast Feed…", systemImage: "dot.radiowaves.left.and.right") }
-                Button {
-                    presentingURLSheet = .listenAudioURL
-                } label: { Label("Paste Audio URL…", systemImage: "link") }
-                Button {
-                    pickFiles()
-                } label: { Label("Add Audio File…", systemImage: "music.note") }
-            } label: {
-                Label("Add", systemImage: "plus")
-            }
-        }
-    }
-
-    // MARK: - Add logic
-
-    private func addURLItem(kind: URLItemSheet.URLKind, urlString: String, title: String) {
-        guard let url = URL(string: urlString) else { return }
-        let item = TodoItem(
-            category: category,
-            title: title.isEmpty ? urlString : title,
-            sourceURLString: urlString
-        )
-        switch kind {
-        case .watchVideo:
-            item.videoStatus = .pending
-        case .readWeb:
-            item.readKind = .webURL
-        case .listenPodcast:
-            item.listenKind = .podcastFeed
-        case .listenAudioURL:
-            item.listenKind = .audioURL
-        }
-        context.insert(item)
-        selectedItemID = item.id
-        Task { await enrichMetadata(for: item, url: url, kind: kind) }
-    }
-
-    private func enrichMetadata(for item: TodoItem, url: URL, kind: URLItemSheet.URLKind) async {
-        let meta = await MetadataFetcher.fetch(url: url)
-        if let title = meta.title, !title.isEmpty {
-            await MainActor.run { item.title = title }
-        }
-        switch kind {
-        case .listenPodcast:
-            await refreshPodcastFeed(for: item, url: url)
-        case .watchVideo:
-            await fetchVideoInfo(for: item, url: url.absoluteString)
-        default: break
-        }
-    }
-
-    private func refreshPodcastFeed(for item: TodoItem, url: URL) async {
-        do {
-            let feed = try await RSSParser.fetch(from: url)
-            await MainActor.run {
-                if !feed.title.isEmpty { item.title = feed.title }
-                item.notes = feed.description
-                item.listenKind = .podcastFeed
-                item.lastFeedRefreshAt = .now
-                item.episodes?.removeAll()
-                for (i, ep) in feed.episodes.enumerated() {
-                    let episode = PodcastEpisode(
-                        title: ep.title,
-                        summary: ep.summary,
-                        publishedAt: ep.publishedAt,
-                        audioURLString: ep.audioURL,
-                        durationSeconds: ep.durationSeconds,
-                        sortOrder: Double(i)
-                    )
-                    episode.parent = item
-                    context.insert(episode)
-                }
-            }
-        } catch {
-            await MainActor.run {
-                item.listenKind = .audioURL
-            }
-        }
-    }
-
-    private func fetchVideoInfo(for item: TodoItem, url: String) async {
-        guard YTDLPService.shared.isAvailable else { return }
-        if let info = try? await YTDLPService.shared.fetchInfo(url: url) {
-            await MainActor.run {
-                if let t = info.title { item.title = t }
-                if let d = info.duration { item.durationSeconds = d }
-            }
-        }
-    }
-
-    // MARK: - File import
+    // MARK: - File import (used for drag-and-drop directly onto the list)
 
     private func importFile(at url: URL) {
         do {
@@ -262,51 +125,18 @@ struct CategoryListView: View {
                 originalFileName: result.originalName
             )
             switch (category, kind) {
-            case (.mustWatch, .video):
-                item.videoStatus = .downloaded
-            case (.mustRead, .pdf):
-                item.readKind = .pdf
-            case (.mustRead, .epub):
-                item.readKind = .epub
-            case (.mustRead, .mobi):
-                item.readKind = .mobi
-            case (.mustRead, _):
-                item.readKind = .otherFile
-            case (.mustListen, .audio):
-                item.listenKind = .audioFile
+            case (.mustWatch, .video): item.videoStatus = .downloaded
+            case (.mustRead, .pdf): item.readKind = .pdf
+            case (.mustRead, .epub): item.readKind = .epub
+            case (.mustRead, .mobi): item.readKind = .mobi
+            case (.mustRead, _): item.readKind = .otherFile
+            case (.mustListen, .audio): item.listenKind = .audioFile
             default: break
             }
             context.insert(item)
             selectedItemID = item.id
         } catch {
             NSAlert(error: error).runModal()
-        }
-    }
-
-    private func pickFiles() {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.allowsMultipleSelection = true
-        panel.allowedContentTypes = pickerContentTypes
-        panel.prompt = "Add"
-        if panel.runModal() == .OK {
-            for url in panel.urls { importFile(at: url) }
-        }
-    }
-
-    private var pickerContentTypes: [UTType] {
-        switch category {
-        case .mustWatch: return [.movie, .video, .audiovisualContent]
-        case .mustRead:
-            return [
-                .pdf, .epub, .text, .rtf,
-                UTType(filenameExtension: "mobi"),
-                UTType(filenameExtension: "azw3"),
-                UTType(filenameExtension: "azw")
-            ].compactMap { $0 }
-        case .mustListen: return [.audio, .mp3, .mpeg4Audio, .wav, .aiff]
-        default: return []
         }
     }
 
@@ -319,19 +149,6 @@ struct CategoryListView: View {
         if let name = item.thumbnailFileName { MediaStore.shared.deleteFile(named: name) }
         context.delete(item)
         if selectedItemID == item.id { selectedItemID = nil }
-    }
-}
-
-// MARK: - URLItemSheet selection wrapper
-
-extension URLItemSheet.URLKind: Identifiable {
-    public var id: String {
-        switch self {
-        case .watchVideo: return "watchVideo"
-        case .readWeb: return "readWeb"
-        case .listenPodcast: return "listenPodcast"
-        case .listenAudioURL: return "listenAudioURL"
-        }
     }
 }
 
@@ -348,50 +165,17 @@ private extension View {
             self
         } else {
             self.onDrop(of: [UTType.fileURL], isTargeted: isTargeted) { providers in
-                loadURLs(from: providers, onURLs: onURLs)
+                loadFileURLs(from: providers) { urls in onURLs(urls) }
             }
         }
     }
-}
-
-private func loadURLs(from providers: [NSItemProvider], onURLs: @escaping ([URL]) -> Void) -> Bool {
-    let group = DispatchGroup()
-    var urls: [URL] = []
-    let lock = NSLock()
-    var any = false
-
-    for provider in providers {
-        guard provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) else { continue }
-        any = true
-        group.enter()
-        provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, _ in
-            defer { group.leave() }
-            var url: URL?
-            if let d = item as? Data, let u = URL(dataRepresentation: d, relativeTo: nil) {
-                url = u
-            } else if let u = item as? URL {
-                url = u
-            } else if let s = item as? String, let u = URL(string: s) {
-                url = u
-            }
-            if let url {
-                lock.lock(); urls.append(url); lock.unlock()
-            }
-        }
-    }
-    group.notify(queue: .main) {
-        if !urls.isEmpty { onURLs(urls) }
-    }
-    return any
 }
 
 // MARK: - Empty state
 
 struct EmptyStateView: View {
     let category: MustCategory
-    let onTextAdd: () -> Void
-    let onURLAdd: (URLItemSheet.URLKind) -> Void
-    let onFilePick: () -> Void
+    let onAdd: () -> Void
 
     var body: some View {
         VStack(spacing: 18) {
@@ -406,10 +190,13 @@ struct EmptyStateView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 36)
 
-            VStack(spacing: 10) {
-                buttons
+            Button(action: onAdd) {
+                Label(addLabel, systemImage: "plus.circle.fill")
+                    .frame(maxWidth: 260)
             }
-            .padding(.top, 6)
+            .controlSize(.large)
+            .buttonStyle(.borderedProminent)
+            .padding(.top, 4)
 
             if category != .mustDo {
                 Text("Tip: you can also drag files from Finder onto this list.")
@@ -434,48 +221,19 @@ struct EmptyStateView: View {
     private var subhead: String {
         switch category {
         case .mustDo: return "Add tasks you want to get done."
-        case .mustWatch: return "Save YouTube, Twitter, or other video URLs to watch offline, or add local video files."
-        case .mustRead: return "Save web articles, drop in PDFs and EPUBs, or add other documents."
-        case .mustListen: return "Subscribe to a podcast feed, add an audio URL, or import local audio files."
+        case .mustWatch: return "Save YouTube, Twitter, or other video URLs to watch offline, or drop video files."
+        case .mustRead: return "Save web articles, drop PDFs and EPUBs, or add other documents."
+        case .mustListen: return "Subscribe to a podcast RSS feed, add an audio URL, or drop audio files."
         }
     }
 
-    @ViewBuilder private var buttons: some View {
+    private var addLabel: String {
         switch category {
-        case .mustDo:
-            primaryButton("New Todo", icon: "square.and.pencil", action: onTextAdd)
-
-        case .mustWatch:
-            primaryButton("Paste Video URL…", icon: "link") { onURLAdd(.watchVideo) }
-            secondaryButton("Add Video File…", icon: "film", action: onFilePick)
-
-        case .mustRead:
-            primaryButton("Paste Web URL…", icon: "globe") { onURLAdd(.readWeb) }
-            secondaryButton("Add PDF / EPUB / Doc…", icon: "doc.text", action: onFilePick)
-
-        case .mustListen:
-            primaryButton("Add Podcast Feed…", icon: "dot.radiowaves.left.and.right") { onURLAdd(.listenPodcast) }
-            secondaryButton("Paste Audio URL…", icon: "link") { onURLAdd(.listenAudioURL) }
-            secondaryButton("Add Audio File…", icon: "music.note", action: onFilePick)
+        case .mustDo: return "New Todo"
+        case .mustWatch: return "New Must Watch"
+        case .mustRead: return "New Must Read"
+        case .mustListen: return "New Must Listen"
         }
-    }
-
-    private func primaryButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Label(title, systemImage: icon)
-                .frame(maxWidth: 260)
-        }
-        .controlSize(.large)
-        .buttonStyle(.borderedProminent)
-    }
-
-    private func secondaryButton(_ title: String, icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Label(title, systemImage: icon)
-                .frame(maxWidth: 260)
-        }
-        .controlSize(.large)
-        .buttonStyle(.bordered)
     }
 }
 

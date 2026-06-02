@@ -4,16 +4,20 @@ import SwiftData
 struct ContentView: View {
     @State private var selectedCategory: MustCategory? = .mustDo
     @State private var selectedItemID: UUID?
+    @State private var showAddSheet = false
 
     var body: some View {
         NavigationSplitView {
-            SidebarView(selection: $selectedCategory)
-                .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 260)
+            SidebarView(
+                selection: $selectedCategory,
+                onAdd: { showAddSheet = true }
+            )
+            .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 280)
         } content: {
             if let category = selectedCategory {
                 CategoryListView(category: category, selectedItemID: $selectedItemID)
                     .id(category)
-                    .navigationSplitViewColumnWidth(min: 280, ideal: 340)
+                    .navigationSplitViewColumnWidth(min: 300, ideal: 360)
             } else {
                 ContentUnavailableView("Select a list", systemImage: "sidebar.left")
             }
@@ -21,37 +25,70 @@ struct ContentView: View {
             DetailHost(itemID: selectedItemID)
         }
         .navigationTitle("MustDo")
+        .sheet(isPresented: $showAddSheet) {
+            AddItemSheet(
+                initialCategory: selectedCategory ?? .mustDo,
+                onPickedCategory: { selectedCategory = $0 },
+                onItemAdded: { selectedItemID = $0 }
+            )
+        }
     }
 }
 
 struct SidebarView: View {
     @Binding var selection: MustCategory?
+    let onAdd: () -> Void
     @Query private var items: [TodoItem]
 
     var body: some View {
-        List(selection: $selection) {
-            Section("Lists") {
-                ForEach(MustCategory.allCases) { c in
-                    Label {
-                        HStack {
-                            Text(c.title)
-                            Spacer()
-                            Text("\(count(for: c))")
-                                .foregroundStyle(.secondary)
-                                .font(.callout.monospacedDigit())
-                        }
-                    } icon: {
-                        Image(systemName: c.systemImage)
+        VStack(spacing: 0) {
+            List(selection: $selection) {
+                Section("Lists") {
+                    ForEach(MustCategory.allCases) { c in
+                        SidebarRow(category: c, count: count(for: c))
+                            .tag(c as MustCategory?)
                     }
-                    .tag(c as MustCategory?)
                 }
             }
+            .listStyle(.sidebar)
+
+            Divider()
+            Button {
+                onAdd()
+            } label: {
+                Label("New Item", systemImage: "plus.circle.fill")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+            }
+            .buttonStyle(.borderless)
+            .keyboardShortcut("n", modifiers: .command)
+            .help("Add a new item to any list")
         }
-        .listStyle(.sidebar)
     }
 
     private func count(for c: MustCategory) -> Int {
         items.filter { $0.category == c && !$0.isCompleted }.count
+    }
+}
+
+struct SidebarRow: View {
+    let category: MustCategory
+    let count: Int
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: category.systemImage)
+                .foregroundStyle(.tint)
+                .frame(width: 18)
+            Text(category.title)
+            Spacer(minLength: 4)
+            if count > 0 {
+                Text("\(count)")
+                    .foregroundStyle(.secondary)
+                    .font(.callout.monospacedDigit())
+            }
+        }
+        .contentShape(Rectangle())
     }
 }
 
