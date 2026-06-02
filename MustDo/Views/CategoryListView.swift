@@ -11,6 +11,7 @@ struct CategoryListView: View {
     @State private var showAddSheet = false
     @State private var showCompleted = false
     @State private var urlInput = ""
+    @State private var isDropTargeted = false
 
     init(category: MustCategory, selectedItemID: Binding<UUID?>) {
         self.category = category
@@ -32,6 +33,45 @@ struct CategoryListView: View {
                 quickAddBar
                 Divider()
             }
+            listOrEmptyState
+        }
+        .navigationTitle(category.title)
+        .toolbar {
+            ToolbarItemGroup {
+                Toggle(isOn: $showCompleted) {
+                    Label("Show Completed", systemImage: showCompleted ? "eye" : "eye.slash")
+                }
+                .toggleStyle(.button)
+
+                if category != .mustDo {
+                    Button {
+                        pickFiles()
+                    } label: {
+                        Label("Add File…", systemImage: "doc.badge.plus")
+                    }
+                    .help(filePickerHelp)
+                }
+
+                Button {
+                    showAddSheet = true
+                } label: {
+                    Label("Add", systemImage: "plus")
+                }
+                .keyboardShortcut("n", modifiers: .command)
+            }
+        }
+        .sheet(isPresented: $showAddSheet) {
+            AddItemSheet(category: category, onAdd: addItemFromSheet)
+        }
+    }
+
+    @ViewBuilder private var listOrEmptyState: some View {
+        if filteredItems.isEmpty {
+            emptyState
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(dropOverlay)
+                .dropDestination(for: URL.self, action: { urls, _ in handleDrop(urls) }, isTargeted: { isDropTargeted = $0 })
+        } else {
             List(selection: $selectedItemID) {
                 ForEach(filteredItems, id: \.id) { item in
                     ItemRow(item: item)
@@ -51,31 +91,63 @@ struct CategoryListView: View {
                 }
             }
             .listStyle(.inset)
+            .background(dropOverlay)
+            .dropDestination(for: URL.self, action: { urls, _ in handleDrop(urls) }, isTargeted: { isDropTargeted = $0 })
         }
-        .navigationTitle(category.title)
-        .toolbar {
-            ToolbarItemGroup {
-                Toggle(isOn: $showCompleted) {
-                    Label("Show Completed", systemImage: showCompleted ? "eye" : "eye.slash")
-                }
-                .toggleStyle(.button)
+    }
 
-                Button {
-                    showAddSheet = true
-                } label: {
-                    Label("Add", systemImage: "plus")
+    @ViewBuilder private var dropOverlay: some View {
+        if isDropTargeted && category != .mustDo {
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(Color.accentColor, lineWidth: 3)
+                .background(Color.accentColor.opacity(0.08))
+                .padding(4)
+                .allowsHitTesting(false)
+        }
+    }
+
+    @ViewBuilder private var emptyState: some View {
+        VStack(spacing: 12) {
+            Image(systemName: category.systemImage)
+                .font(.system(size: 48))
+                .foregroundStyle(.tertiary)
+            Text("No \(category.title) items")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+            Text(emptyStateHint)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+            if category != .mustDo {
+                HStack {
+                    Button {
+                        pickFiles()
+                    } label: {
+                        Label("Choose File…", systemImage: "doc.badge.plus")
+                    }
+                    Button {
+                        showAddSheet = true
+                    } label: {
+                        Label("New Item", systemImage: "plus")
+                    }
+                    .buttonStyle(.borderedProminent)
                 }
-                .keyboardShortcut("n", modifiers: .command)
+                .padding(.top, 6)
             }
         }
-        .sheet(isPresented: $showAddSheet) {
-            AddItemSheet(category: category) { newItem in
-                context.insert(newItem)
-                selectedItemID = newItem.id
-            }
-        }
-        .onDrop(of: dropTypes, isTargeted: nil) { providers in
-            handleDrop(providers: providers)
+    }
+
+    private var emptyStateHint: String {
+        switch category {
+        case .mustDo:
+            return "Press ⌘N or click + to add a todo."
+        case .mustWatch:
+            return "Paste a YouTube / Twitter / video URL in the bar above, drag video files here, or click + / Choose File."
+        case .mustRead:
+            return "Paste a web URL above, drag a PDF or EPUB here, or click + / Choose File."
+        case .mustListen:
+            return "Paste a podcast RSS or audio URL above, drag audio files here, or click + / Choose File."
         }
     }
 
@@ -92,7 +164,9 @@ struct CategoryListView: View {
                     .controlSize(.small)
             }
         }
-        .padding(8)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color(NSColor.controlBackgroundColor))
     }
 
     private var placeholderForQuickAdd: String {
@@ -101,6 +175,15 @@ struct CategoryListView: View {
         case .mustRead: return "Paste a web URL…"
         case .mustListen: return "Paste podcast RSS or audio URL…"
         default: return ""
+        }
+    }
+
+    private var filePickerHelp: String {
+        switch category {
+        case .mustWatch: return "Choose a video file"
+        case .mustRead: return "Choose a PDF / EPUB / document"
+        case .mustListen: return "Choose an audio file"
+        default: return "Choose a file"
         }
     }
 
@@ -115,6 +198,44 @@ struct CategoryListView: View {
         Task { await enrichMetadata(for: item, url: url) }
     }
 
+    private func addItemFromSheet(_ payload: AddItemSheet.Payload) {
+        switch payload {
+        case .text(let title, let notes):
+            let item = TodoItem(category: category, title: title, notes: notes)
+            context.insert(item)
+            selectedItemID = item.id
+
+        case .url(let title, let urlString):
+            guard let url = URL(string: urlString) else { return }
+            let item = TodoItem(
+                category: category,
+                title: title.isEmpty ? urlString : title,
+                sourceURLString: urlString
+            )
+            configureNewURLItem(item, url: url)
+            context.insert(item)
+            selectedItemID = item.id
+            Task { await enrichMetadata(for: item, url: url) }
+
+        case .file(let title, let fileURL):
+            do {
+                let kind = MediaKind.detect(from: fileURL)
+                let result = try MediaStore.shared.importFile(at: fileURL, preferredPrefix: category.rawValue)
+                let item = TodoItem(
+                    category: category,
+                    title: title.isEmpty ? fileURL.deletingPathExtension().lastPathComponent : title,
+                    storedFileName: result.storedName,
+                    originalFileName: result.originalName
+                )
+                applyKind(category: category, kind: kind, to: item)
+                context.insert(item)
+                selectedItemID = item.id
+            } catch {
+                NSAlert(error: error).runModal()
+            }
+        }
+    }
+
     private func configureNewURLItem(_ item: TodoItem, url: URL) {
         switch category {
         case .mustWatch:
@@ -122,8 +243,25 @@ struct CategoryListView: View {
         case .mustRead:
             item.readKind = .webURL
         case .mustListen:
-            // Heuristic: treat as podcast feed first; if parsing fails it's just an audio URL.
             item.listenKind = .podcastFeed
+        default: break
+        }
+    }
+
+    private func applyKind(category: MustCategory, kind: MediaKind, to item: TodoItem) {
+        switch (category, kind) {
+        case (.mustWatch, .video):
+            item.videoStatus = .downloaded
+        case (.mustRead, .pdf):
+            item.readKind = .pdf
+        case (.mustRead, .epub):
+            item.readKind = .epub
+        case (.mustRead, .mobi):
+            item.readKind = .mobi
+        case (.mustRead, _):
+            item.readKind = .otherFile
+        case (.mustListen, .audio):
+            item.listenKind = .audioFile
         default: break
         }
     }
@@ -180,28 +318,13 @@ struct CategoryListView: View {
         }
     }
 
-    private var dropTypes: [UTType] {
-        switch category {
-        case .mustDo: return []
-        case .mustWatch: return [.fileURL, .movie, .video]
-        case .mustRead: return [.fileURL, .pdf, .epub]
-        case .mustListen: return [.fileURL, .audio]
-        }
-    }
-
-    private func handleDrop(providers: [NSItemProvider]) -> Bool {
+    @discardableResult
+    private func handleDrop(_ urls: [URL]) -> Bool {
         guard category != .mustDo else { return false }
-        var handled = false
-        for provider in providers {
-            if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
-                handled = true
-                _ = provider.loadObject(ofClass: URL.self) { url, _ in
-                    guard let url else { return }
-                    Task { @MainActor in importFile(at: url) }
-                }
-            }
+        for url in urls {
+            importFile(at: url)
         }
-        return handled
+        return !urls.isEmpty
     }
 
     private func importFile(at url: URL) {
@@ -214,25 +337,34 @@ struct CategoryListView: View {
                 storedFileName: result.storedName,
                 originalFileName: result.originalName
             )
-            switch (category, kind) {
-            case (.mustWatch, .video):
-                item.videoStatus = .downloaded
-            case (.mustRead, .pdf):
-                item.readKind = .pdf
-            case (.mustRead, .epub):
-                item.readKind = .epub
-            case (.mustRead, .mobi):
-                item.readKind = .mobi
-            case (.mustRead, _):
-                item.readKind = .otherFile
-            case (.mustListen, .audio):
-                item.listenKind = .audioFile
-            default: break
-            }
+            applyKind(category: category, kind: kind, to: item)
             context.insert(item)
             selectedItemID = item.id
         } catch {
             NSAlert(error: error).runModal()
+        }
+    }
+
+    private func pickFiles() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = true
+        panel.allowedContentTypes = pickerContentTypes
+        panel.prompt = "Add"
+        if panel.runModal() == .OK {
+            for url in panel.urls {
+                importFile(at: url)
+            }
+        }
+    }
+
+    private var pickerContentTypes: [UTType] {
+        switch category {
+        case .mustWatch: return [.movie, .video, .audiovisualContent]
+        case .mustRead: return [.pdf, .epub, .text, .rtf, UTType(filenameExtension: "mobi"), UTType(filenameExtension: "azw3"), UTType(filenameExtension: "azw")].compactMap { $0 }
+        case .mustListen: return [.audio, .mp3, .mpeg4Audio, .wav, .aiff]
+        default: return []
         }
     }
 
