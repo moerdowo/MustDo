@@ -41,28 +41,31 @@ struct SidebarView: View {
     @Query private var items: [TodoItem]
 
     var body: some View {
-        VStack(spacing: 0) {
-            List(selection: $selection) {
-                Section("Lists") {
-                    ForEach(MustCategory.allCases) { c in
-                        SidebarRow(category: c, count: count(for: c))
-                            .tag(c as MustCategory?)
-                    }
+        List(selection: $selection) {
+            Section("Lists") {
+                ForEach(MustCategory.allCases) { c in
+                    SidebarRow(category: c, count: count(for: c))
+                        .tag(c as MustCategory?)
                 }
             }
-            .listStyle(.sidebar)
-
-            Divider()
-            Button {
-                onAdd()
-            } label: {
-                Label("New Item", systemImage: "plus.circle.fill")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+        }
+        .listStyle(.sidebar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            VStack(spacing: 0) {
+                Divider()
+                Button {
+                    onAdd()
+                } label: {
+                    Label("New Item", systemImage: "plus.circle.fill")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, 8)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless)
+                .keyboardShortcut("n", modifiers: .command)
+                .help("Add a new item to any list")
             }
-            .buttonStyle(.borderless)
-            .keyboardShortcut("n", modifiers: .command)
-            .help("Add a new item to any list")
+            .background(.bar)
         }
     }
 
