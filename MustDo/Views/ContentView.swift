@@ -45,7 +45,7 @@ struct SidebarView: View {
             Section("Lists") {
                 ForEach(MustCategory.allCases) { c in
                     SidebarRow(category: c, count: count(for: c))
-                        .tag(c as MustCategory?)
+                        .tag(c)
                 }
             }
         }
