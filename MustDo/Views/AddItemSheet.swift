@@ -288,13 +288,9 @@ struct AddItemSheet: View {
                 }
             }
             for fileURL in pendingFiles {
-                do {
-                    let item = try makeFileItem(category: category, fileURL: fileURL, title: title)
-                    context.insert(item)
-                    lastID = item.id
-                } catch {
-                    errorMessage = (error as NSError).localizedDescription
-                }
+                let item = makeFileItem(category: category, fileURL: fileURL, title: title)
+                context.insert(item)
+                lastID = item.id
             }
             if let lastID { onItemAdded(lastID) }
             dismiss()
@@ -320,15 +316,14 @@ struct AddItemSheet: View {
         return item
     }
 
-    private func makeFileItem(category: MustCategory, fileURL: URL, title: String) throws -> TodoItem {
+    private func makeFileItem(category: MustCategory, fileURL: URL, title: String) -> TodoItem {
         let kind = MediaKind.detect(from: fileURL)
-        let result = try MediaStore.shared.importFile(at: fileURL, preferredPrefix: category.rawValue)
         let item = TodoItem(
             category: category,
             title: title.isEmpty ? fileURL.deletingPathExtension().lastPathComponent : title,
-            storedFileName: result.storedName,
-            originalFileName: result.originalName
+            originalFileName: fileURL.lastPathComponent
         )
+        item.filePath = fileURL.path
         switch (category, kind) {
         case (.mustWatch, .video): item.videoStatus = .downloaded
         case (.mustRead, .pdf): item.readKind = .pdf

@@ -23,6 +23,7 @@
 		E0000000000000000000E00E /* EPUBReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A00E /* EPUBReaderView.swift */; };
 		E0000000000000000000E00F /* AudioPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A00F /* AudioPlayerView.swift */; };
 		E0000000000000000000E010 /* PodcastFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A010 /* PodcastFeedView.swift */; };
+		E0000000000000000000E011 /* StableVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A011 /* StableVideoPlayer.swift */; };
 		E0000000000000000000F001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000B003 /* Assets.xcassets */; };
 		E0000000000000000000F002 /* yt-dlp in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000B004 /* yt-dlp */; };
 /* End PBXBuildFile section */
@@ -44,6 +45,7 @@
 		F0000000000000000000A00E /* EPUBReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBReaderView.swift; sourceTree = "<group>"; };
 		F0000000000000000000A00F /* AudioPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerView.swift; sourceTree = "<group>"; };
 		F0000000000000000000A010 /* PodcastFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastFeedView.swift; sourceTree = "<group>"; };
+		F0000000000000000000A011 /* StableVideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StableVideoPlayer.swift; sourceTree = "<group>"; };
 		F0000000000000000000B001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0000000000000000000B002 /* MustDo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MustDo.entitlements; sourceTree = "<group>"; };
 		F0000000000000000000B003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 				F0000000000000000000A00E /* EPUBReaderView.swift */,
 				F0000000000000000000A00F /* AudioPlayerView.swift */,
 				F0000000000000000000A010 /* PodcastFeedView.swift */,
+				F0000000000000000000A011 /* StableVideoPlayer.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -223,6 +226,7 @@
 				E0000000000000000000E00E /* EPUBReaderView.swift in Sources */,
 				E0000000000000000000E00F /* AudioPlayerView.swift in Sources */,
 				E0000000000000000000E010 /* PodcastFeedView.swift in Sources */,
+				E0000000000000000000E011 /* StableVideoPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

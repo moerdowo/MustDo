@@ -78,8 +78,8 @@ struct MustWatchContent: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            if let localURL = item.storedFileURL, item.videoStatus == .downloaded {
-                VideoPlayer(player: AVPlayer(url: localURL))
+            if let localURL = item.playbackURL, item.videoStatus == .downloaded {
+                StableVideoPlayer(url: localURL)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let urlString = item.sourceURLString {
                 downloadPanel(urlString: urlString)
@@ -165,13 +165,13 @@ struct MustReadContent: View {
         Group {
             switch item.readKind {
             case .pdf:
-                if let url = item.storedFileURL {
+                if let url = item.playbackURL {
                     PDFReaderView(url: url)
                 } else {
                     ContentUnavailableView("Missing PDF", systemImage: "doc")
                 }
             case .epub:
-                if let url = item.storedFileURL {
+                if let url = item.playbackURL {
                     EPUBReaderView(epubURL: url)
                 } else {
                     ContentUnavailableView("Missing EPUB", systemImage: "book")
@@ -202,7 +202,7 @@ struct FileFallbackView: View {
                 .foregroundStyle(.secondary)
             Text(item.originalFileName ?? "File")
             HStack {
-                if let url = item.storedFileURL {
+                if let url = item.playbackURL {
                     Button("Open in Default App") { NSWorkspace.shared.open(url) }
                     Button("Reveal in Finder") {
                         NSWorkspace.shared.activateFileViewerSelecting([url])
@@ -222,7 +222,7 @@ struct MustListenContent: View {
         Group {
             switch item.listenKind {
             case .audioFile:
-                if let url = item.storedFileURL {
+                if let url = item.playbackURL {
                     AudioPlayerView(url: url)
                 } else {
                     ContentUnavailableView("Missing audio", systemImage: "music.note")

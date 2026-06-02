@@ -112,32 +112,29 @@ struct CategoryListView: View {
         .allowsHitTesting(false)
     }
 
-    // MARK: - File import (used for drag-and-drop directly onto the list)
+    // MARK: - File import (drag-and-drop directly onto the list)
+    // We don't copy the file — store the absolute path so the player /
+    // PDF view reads it in place.
 
     private func importFile(at url: URL) {
-        do {
-            let kind = MediaKind.detect(from: url)
-            let result = try MediaStore.shared.importFile(at: url, preferredPrefix: category.rawValue)
-            let item = TodoItem(
-                category: category,
-                title: url.deletingPathExtension().lastPathComponent,
-                storedFileName: result.storedName,
-                originalFileName: result.originalName
-            )
-            switch (category, kind) {
-            case (.mustWatch, .video): item.videoStatus = .downloaded
-            case (.mustRead, .pdf): item.readKind = .pdf
-            case (.mustRead, .epub): item.readKind = .epub
-            case (.mustRead, .mobi): item.readKind = .mobi
-            case (.mustRead, _): item.readKind = .otherFile
-            case (.mustListen, .audio): item.listenKind = .audioFile
-            default: break
-            }
-            context.insert(item)
-            selectedItemID = item.id
-        } catch {
-            NSAlert(error: error).runModal()
+        let kind = MediaKind.detect(from: url)
+        let item = TodoItem(
+            category: category,
+            title: url.deletingPathExtension().lastPathComponent,
+            originalFileName: url.lastPathComponent
+        )
+        item.filePath = url.path
+        switch (category, kind) {
+        case (.mustWatch, .video): item.videoStatus = .downloaded
+        case (.mustRead, .pdf): item.readKind = .pdf
+        case (.mustRead, .epub): item.readKind = .epub
+        case (.mustRead, .mobi): item.readKind = .mobi
+        case (.mustRead, _): item.readKind = .otherFile
+        case (.mustListen, .audio): item.listenKind = .audioFile
+        default: break
         }
+        context.insert(item)
+        selectedItemID = item.id
     }
 
     private func toggleComplete(_ item: TodoItem) {

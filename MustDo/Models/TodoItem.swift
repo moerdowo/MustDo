@@ -62,6 +62,16 @@ final class TodoItem {
 
     var sourceURLString: String?
 
+    /// Absolute path to a file the user owns (dragged in / picked).
+    /// We do NOT copy these — we reference them in place so the user can
+    /// keep their library wherever they want and AVPlayer / PDFKit / etc.
+    /// read the file directly.
+    var filePath: String?
+
+    /// Filename inside MediaStore for files MustDo itself produced
+    /// (yt-dlp downloads, thumbnails). Stays alongside `filePath` so
+    /// existing data continues to work and we can keep ownership of
+    /// generated media.
     var storedFileName: String?
     var originalFileName: String?
 
@@ -129,6 +139,15 @@ final class TodoItem {
     var storedFileURL: URL? {
         guard let name = storedFileName else { return nil }
         return MediaStore.shared.url(for: name)
+    }
+
+    /// Best URL for media playback or reading: a user-owned filePath if
+    /// present, otherwise a MediaStore-owned file (yt-dlp download, etc.).
+    var playbackURL: URL? {
+        if let p = filePath, !p.isEmpty {
+            return URL(fileURLWithPath: p)
+        }
+        return storedFileURL
     }
 
     var thumbnailURL: URL? {
