@@ -27,6 +27,8 @@
 		E0000000000000000000E012 /* LinkText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A012 /* LinkText.swift */; };
 		E0000000000000000000E013 /* WebBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A013 /* WebBrowser.swift */; };
 		E0000000000000000000E014 /* AllItemsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A014 /* AllItemsView.swift */; };
+		E0000000000000000000E015 /* UpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A015 /* UpdateService.swift */; };
+		E0000000000000000000E016 /* UpdateBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000A016 /* UpdateBanner.swift */; };
 		E0000000000000000000F001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000B003 /* Assets.xcassets */; };
 		E0000000000000000000F002 /* yt-dlp in Resources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000B004 /* yt-dlp */; };
 /* End PBXBuildFile section */
@@ -52,6 +54,8 @@
 		F0000000000000000000A012 /* LinkText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkText.swift; sourceTree = "<group>"; };
 		F0000000000000000000A013 /* WebBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowser.swift; sourceTree = "<group>"; };
 		F0000000000000000000A014 /* AllItemsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllItemsView.swift; sourceTree = "<group>"; };
+		F0000000000000000000A015 /* UpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateService.swift; sourceTree = "<group>"; };
+		F0000000000000000000A016 /* UpdateBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateBanner.swift; sourceTree = "<group>"; };
 		F0000000000000000000B001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F0000000000000000000B002 /* MustDo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MustDo.entitlements; sourceTree = "<group>"; };
 		F0000000000000000000B003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -109,6 +113,7 @@
 				F0000000000000000000A005 /* RSSParser.swift */,
 				F0000000000000000000A006 /* EPUBLoader.swift */,
 				F0000000000000000000A007 /* MetadataFetcher.swift */,
+				F0000000000000000000A015 /* UpdateService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -129,6 +134,7 @@
 				F0000000000000000000A012 /* LinkText.swift */,
 				F0000000000000000000A013 /* WebBrowser.swift */,
 				F0000000000000000000A014 /* AllItemsView.swift */,
+				F0000000000000000000A016 /* UpdateBanner.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -239,6 +245,8 @@
 				E0000000000000000000E012 /* LinkText.swift in Sources */,
 				E0000000000000000000E013 /* WebBrowser.swift in Sources */,
 				E0000000000000000000E014 /* AllItemsView.swift in Sources */,
+				E0000000000000000000E015 /* UpdateService.swift in Sources */,
+				E0000000000000000000E016 /* UpdateBanner.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,6 +3,8 @@ import SwiftData
 
 @main
 struct MustDoApp: App {
+    @StateObject private var updater = UpdateService()
+
     let container: ModelContainer = {
         do {
             let schema = Schema([TodoItem.self, PodcastEpisode.self])
@@ -16,10 +18,16 @@ struct MustDoApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(updater)
         }
         .modelContainer(container)
         .commands {
             CommandGroup(replacing: .newItem) { }
+            CommandGroup(after: .appInfo) {
+                Button("Check for Updates…") {
+                    updater.checkManually()
+                }
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ enum SidebarItem: Hashable {
 }
 
 struct ContentView: View {
+    @EnvironmentObject private var updater: UpdateService
     @State private var selection: SidebarItem? = .all
     @State private var selectedItemID: UUID?
     @State private var showAddSheet = false
@@ -37,6 +38,11 @@ struct ContentView: View {
         }
         .navigationTitle("MustDo")
         .focusEffectDisabled()
+        .safeAreaInset(edge: .top, spacing: 0) {
+            UpdateBanner(updater: updater)
+                .animation(.easeInOut(duration: 0.25), value: updater.state)
+        }
+        .task { updater.checkOnLaunch() }
         .sheet(isPresented: $showAddSheet) {
             AddItemSheet(
                 initialCategory: defaultAddCategory,
