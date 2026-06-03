@@ -1,51 +1,80 @@
 import SwiftUI
 import SwiftData
 
+/// Sidebar selection: the combined "All" view, or one specific list.
+enum SidebarItem: Hashable {
+    case all
+    case category(MustCategory)
+}
+
 struct ContentView: View {
-    @State private var selectedCategory: MustCategory? = .mustDo
+    @State private var selection: SidebarItem? = .all
     @State private var selectedItemID: UUID?
     @State private var showAddSheet = false
 
     var body: some View {
         NavigationSplitView {
             SidebarView(
-                selection: $selectedCategory,
+                selection: $selection,
                 onAdd: { showAddSheet = true }
             )
             .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 280)
         } content: {
-            if let category = selectedCategory {
-                CategoryListView(category: category, selectedItemID: $selectedItemID)
-                    .id(category)
-                    .navigationSplitViewColumnWidth(min: 300, ideal: 360)
-            } else {
-                ContentUnavailableView("Select a list", systemImage: "sidebar.left")
+            Group {
+                switch selection {
+                case .all:
+                    AllItemsView(selectedItemID: $selectedItemID, onAdd: { showAddSheet = true })
+                case .category(let category):
+                    CategoryListView(category: category, selectedItemID: $selectedItemID)
+                        .id(category)
+                case nil:
+                    ContentUnavailableView("Select a list", systemImage: "sidebar.left")
+                }
             }
+            .navigationSplitViewColumnWidth(min: 300, ideal: 360)
         } detail: {
             DetailHost(itemID: selectedItemID)
         }
         .navigationTitle("MustDo")
+        .focusEffectDisabled()
         .sheet(isPresented: $showAddSheet) {
             AddItemSheet(
-                initialCategory: selectedCategory ?? .mustDo,
-                onPickedCategory: { selectedCategory = $0 },
+                initialCategory: defaultAddCategory,
+                onPickedCategory: { selection = .category($0) },
                 onItemAdded: { selectedItemID = $0 }
             )
         }
     }
+
+    private var defaultAddCategory: MustCategory {
+        if case .category(let c) = selection { return c }
+        return .mustDo
+    }
 }
 
 struct SidebarView: View {
-    @Binding var selection: MustCategory?
+    @Binding var selection: SidebarItem?
     let onAdd: () -> Void
     @Query private var items: [TodoItem]
 
     var body: some View {
         List(selection: $selection) {
+            Section {
+                SidebarRowView(
+                    title: "All Must Do",
+                    systemImage: "tray.full.fill",
+                    count: totalIncomplete
+                )
+                .tag(SidebarItem.all)
+            }
             Section("Lists") {
                 ForEach(MustCategory.allCases) { c in
-                    SidebarRow(category: c, count: count(for: c))
-                        .tag(c)
+                    SidebarRowView(
+                        title: c.title,
+                        systemImage: c.systemImage,
+                        count: count(for: c)
+                    )
+                    .tag(SidebarItem.category(c))
                 }
             }
         }
@@ -69,21 +98,26 @@ struct SidebarView: View {
         }
     }
 
+    private var totalIncomplete: Int {
+        items.filter { !$0.isCompleted }.count
+    }
+
     private func count(for c: MustCategory) -> Int {
         items.filter { $0.category == c && !$0.isCompleted }.count
     }
 }
 
-struct SidebarRow: View {
-    let category: MustCategory
+struct SidebarRowView: View {
+    let title: String
+    let systemImage: String
     let count: Int
 
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: category.systemImage)
+            Image(systemName: systemImage)
                 .foregroundStyle(.tint)
                 .frame(width: 18)
-            Text(category.title)
+            Text(title)
             Spacer(minLength: 4)
             if count > 0 {
                 Text("\(count)")
