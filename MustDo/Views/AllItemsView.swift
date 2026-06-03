@@ -34,7 +34,7 @@ struct AllItemsView: View {
             } else {
                 List(selection: $selectedItemID) {
                     ForEach(visibleItems, id: \.id) { item in
-                        AllItemRow(item: item)
+                        ItemRow(item: item)
                             .tag(item.id as UUID?)
                             .contextMenu {
                                 Button(item.isCompleted ? "Mark Not Done" : "Mark Done") {
@@ -73,22 +73,5 @@ struct AllItemsView: View {
         if let name = item.thumbnailFileName { MediaStore.shared.deleteFile(named: name) }
         context.delete(item)
         if selectedItemID == item.id { selectedItemID = nil }
-    }
-}
-
-/// Row used in the combined list — an ItemRow prefixed with a colored
-/// category icon so you can tell which list each entry belongs to.
-struct AllItemRow: View {
-    @Bindable var item: TodoItem
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: item.category.systemImage)
-                .foregroundStyle(.tint)
-                .frame(width: 20)
-                .help(item.category.title)
-                .padding(.top, 2)
-            ItemRow(item: item)
-        }
     }
 }
