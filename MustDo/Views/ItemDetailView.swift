@@ -29,12 +29,13 @@ struct ItemDetailView: View {
                 TextField("Title", text: $item.title)
                     .textFieldStyle(.plain)
                     .font(.title2.bold())
-                if let url = item.sourceURL {
+                ForEach(headerLinks, id: \.absoluteString) { url in
                     Link(destination: url) {
                         Label(url.absoluteString, systemImage: "link")
                             .lineLimit(1)
                             .font(.callout)
                     }
+                    .tint(.accentColor)
                 }
                 if let orig = item.originalFileName {
                     Text(orig)
@@ -45,6 +46,21 @@ struct ItemDetailView: View {
             Spacer()
         }
         .padding()
+    }
+
+    /// Links shown under the title: the item's own sourceURL (for
+    /// URL-based items) plus any URLs detected in the title and notes,
+    /// deduped, in order.
+    private var headerLinks: [URL] {
+        var seen = Set<String>()
+        var out: [URL] = []
+        if let s = item.sourceURL, seen.insert(s.absoluteString).inserted {
+            out.append(s)
+        }
+        for u in item.detectedURLs where seen.insert(u.absoluteString).inserted {
+            out.append(u)
+        }
+        return out
     }
 
     @ViewBuilder private var content: some View {
@@ -63,11 +79,35 @@ struct ItemDetailView: View {
 
 struct MustDoContent: View {
     @Bindable var item: TodoItem
+    @State private var notesExpanded = false
+
     var body: some View {
+        if let webURL = item.primaryWebURL {
+            VStack(spacing: 0) {
+                DisclosureGroup(isExpanded: $notesExpanded) {
+                    notesEditor
+                        .frame(height: 120)
+                } label: {
+                    Label("Notes", systemImage: "note.text")
+                        .font(.callout.weight(.medium))
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                Divider()
+                WebBrowser(url: webURL)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .onAppear { notesExpanded = !item.notes.isEmpty }
+        } else {
+            notesEditor
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    private var notesEditor: some View {
         TextEditor(text: $item.notes)
             .font(.body)
             .padding(8)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(NSColor.textBackgroundColor))
     }
 }
@@ -180,7 +220,7 @@ struct MustReadContent: View {
                 FileFallbackView(item: item)
             case .webURL:
                 if let url = item.sourceURL {
-                    WebPageView(url: url)
+                    WebBrowser(url: url)
                 } else {
                     ContentUnavailableView("Missing URL", systemImage: "link")
                 }

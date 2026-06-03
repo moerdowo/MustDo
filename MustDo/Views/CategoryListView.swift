@@ -251,9 +251,8 @@ struct ItemRow: View {
             .buttonStyle(.plain)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.title)
+                LinkText(text: item.title, strikethrough: item.isCompleted)
                     .lineLimit(2)
-                    .strikethrough(item.isCompleted, color: .secondary)
                     .foregroundStyle(item.isCompleted ? .secondary : .primary)
                 if let subtitle = subtitleText {
                     Text(subtitle)

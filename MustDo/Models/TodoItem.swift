@@ -154,6 +154,26 @@ final class TodoItem {
         guard let name = thumbnailFileName else { return nil }
         return MediaStore.shared.url(for: name)
     }
+
+    // MARK: - Links detected in free text (title / notes)
+
+    var titleLinkURLs: [URL] { LinkDetection.urls(in: title) }
+    var noteLinkURLs: [URL] { LinkDetection.urls(in: notes) }
+
+    /// Unique URLs found in title then notes, in order, deduped.
+    var detectedURLs: [URL] {
+        var seen = Set<String>()
+        var out: [URL] = []
+        for u in titleLinkURLs + noteLinkURLs where seen.insert(u.absoluteString).inserted {
+            out.append(u)
+        }
+        return out
+    }
+
+    /// First renderable web link — prefers the title, falls back to notes.
+    var primaryWebURL: URL? {
+        LinkDetection.firstWebURL(in: title) ?? LinkDetection.firstWebURL(in: notes)
+    }
 }
 
 @Model
