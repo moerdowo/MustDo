@@ -25,6 +25,14 @@ struct AddItemSheet: View {
     @State private var isDropTargeted = false
     @State private var errorMessage: String?
 
+    enum Field { case title, url }
+    @FocusState private var focusedField: Field?
+
+    /// The field a user most likely types into first for each category.
+    private var primaryField: Field {
+        category == .mustDo ? .title : .url
+    }
+
     init(initialCategory: MustCategory, onPickedCategory: @escaping (MustCategory) -> Void, onItemAdded: @escaping (UUID) -> Void) {
         self.initialCategory = initialCategory
         self.onPickedCategory = onPickedCategory
@@ -51,6 +59,8 @@ struct AddItemSheet: View {
                         // pendingFiles/url don't get sent to a new category.
                         pendingFiles.removeAll()
                         errorMessage = nil
+                        // Move the cursor to the new form's primary field.
+                        DispatchQueue.main.async { focusedField = primaryField }
                     }
 
                     Group {
@@ -72,6 +82,10 @@ struct AddItemSheet: View {
             footer
         }
         .frame(width: 560, height: 560)
+        .onAppear {
+            // Focus the primary field once the sheet is on screen.
+            DispatchQueue.main.async { focusedField = primaryField }
+        }
     }
 
     private var header: some View {
@@ -108,6 +122,7 @@ struct AddItemSheet: View {
             sectionHeader("Title")
             TextField("What needs doing?", text: $title)
                 .textFieldStyle(.roundedBorder)
+                .focused($focusedField, equals: .title)
 
             sectionHeader("Notes")
             TextEditor(text: $notes)
@@ -131,6 +146,7 @@ struct AddItemSheet: View {
             HStack(spacing: 8) {
                 TextField(urlKind.placeholder, text: $urlInput)
                     .textFieldStyle(.roundedBorder)
+                    .focused($focusedField, equals: .url)
                     .onSubmit { if canSubmitURL { performAdd() } }
             }
             Text(urlKind.hint)
@@ -194,6 +210,7 @@ struct AddItemSheet: View {
             sectionHeader("Podcast RSS or Audio URL")
             TextField("https://…", text: $urlInput)
                 .textFieldStyle(.roundedBorder)
+                .focused($focusedField, equals: .url)
                 .onSubmit { if canSubmitURL { performAdd() } }
             Text("RSS feeds are parsed into a playable episode list. Other audio URLs are played directly with AVPlayer.")
                 .font(.caption)
