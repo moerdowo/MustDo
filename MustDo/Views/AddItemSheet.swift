@@ -290,6 +290,7 @@ struct AddItemSheet: View {
         case .mustDo:
             let item = TodoItem(category: .mustDo, title: title, notes: notes)
             context.insert(item)
+            try? context.save()
             onItemAdded(item.id)
             dismiss()
 
@@ -309,6 +310,7 @@ struct AddItemSheet: View {
                 context.insert(item)
                 lastID = item.id
             }
+            try? context.save()
             if let lastID { onItemAdded(lastID) }
             dismiss()
         }

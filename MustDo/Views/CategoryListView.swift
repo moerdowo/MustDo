@@ -134,17 +134,20 @@ struct CategoryListView: View {
         default: break
         }
         context.insert(item)
+        try? context.save()
         selectedItemID = item.id
     }
 
     private func toggleComplete(_ item: TodoItem) {
         item.completedAt = item.isCompleted ? nil : .now
+        try? context.save()
     }
 
     private func delete(_ item: TodoItem) {
         if let name = item.storedFileName { MediaStore.shared.deleteFile(named: name) }
         if let name = item.thumbnailFileName { MediaStore.shared.deleteFile(named: name) }
         context.delete(item)
+        try? context.save()
         if selectedItemID == item.id { selectedItemID = nil }
     }
 }

@@ -39,6 +39,7 @@ struct AllItemsView: View {
                             .contextMenu {
                                 Button(item.isCompleted ? "Mark Not Done" : "Mark Done") {
                                     item.completedAt = item.isCompleted ? nil : .now
+                                    try? context.save()
                                 }
                                 Divider()
                                 Button("Delete", role: .destructive) { delete(item) }
@@ -72,6 +73,7 @@ struct AllItemsView: View {
         if let name = item.storedFileName { MediaStore.shared.deleteFile(named: name) }
         if let name = item.thumbnailFileName { MediaStore.shared.deleteFile(named: name) }
         context.delete(item)
+        try? context.save()
         if selectedItemID == item.id { selectedItemID = nil }
     }
 }
